@@ -1,5 +1,6 @@
 package br.com.project.springbootmongodb.repository;
 
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -16,4 +17,12 @@ public interface PostRepository extends MongoRepository<Post, String>{
 	
 	List<Post> findByTitleContainingIgnoreCase(String text);
 	
+	@Query("{ $and: [ { $or: [ { 'title': { $regex: ?0, $options: 'i' } }, { 'body': { $regex: ?0, $options: 'i' } }, { 'comments.text': { $regex: ?0, $options: 'i' } } ] }, { date: {$gte: ?1} }, { date: {$lte: ?2} } ] }")
+	List<Post> fullSearch(String text, Date minDate, Date maxDate);
+	
+	/*
+	 * The query performs a text search in any title, 
+	 * body or comment and that is within a minimum date and a maximum date
+	 */
 }
+
